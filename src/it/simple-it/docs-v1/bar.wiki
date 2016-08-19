@@ -1,0 +1,22 @@
+h1. Products
+
+
+h2. Overview {anchor:overview}
+Sample Products API
+
+
+h3. Version information
+_Version_ : v0
+
+
+h3. URI scheme
+_BasePath_ : /\\ 
+_Schemes_ : HTTP, HTTPS
+
+
+h3. Tags
+
+* products
+
+
+

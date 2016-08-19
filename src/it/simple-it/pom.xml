@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>buildit.it</groupId>
+    <artifactId>simple-it</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>@project.groupId@</groupId>
+                <artifactId>@project.artifactId@</artifactId>
+                <version>@project.version@</version>
+                <configuration>
+                    <apiBaseUrl>http://foo.bar.net/wiki/rest/api/</apiBaseUrl>
+                    <readTimeoutMs>1000</readTimeoutMs>
+                    <connectionTimeoutMs>1000</connectionTimeoutMs>
+                    <credentialsServerId>confluence.credentials</credentialsServerId>
+                    <spaceKey>AC</spaceKey>
+                    <ancestorId>1671226</ancestorId>
+                    <type>page</type>
+                    <representation>wiki</representation>
+                    <documents>
+                        <property>
+                            <name>Foo Document</name>
+                            <value>${basedir}/docs-v1/foo.wiki</value>
+                        </property>
+                        <property>
+                            <name>Bar Document</name>
+                            <value>${basedir}/docs-v1/bar.wiki</value>
+                        </property>
+                    </documents>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>publish-content</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>publish-content</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
