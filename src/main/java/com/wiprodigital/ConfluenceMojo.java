@@ -1,7 +1,7 @@
-package buildit;
+package com.wiprodigital;
 
-import buildit.confluence.ConfluenceApi;
-import buildit.confluence.domain.*;
+import com.wiprodigital.confluence.ConfluenceApi;
+import com.wiprodigital.confluence.domain.*;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;

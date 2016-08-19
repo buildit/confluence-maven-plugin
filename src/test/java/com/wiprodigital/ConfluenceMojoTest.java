@@ -1,9 +1,9 @@
-package buildit;
+package com.wiprodigital;
 
-import buildit.confluence.ConfluenceApi;
-import buildit.confluence.domain.Content;
-import buildit.confluence.domain.SearchContentResults;
-import buildit.confluence.domain.Version;
+import com.wiprodigital.confluence.ConfluenceApi;
+import com.wiprodigital.confluence.domain.Content;
+import com.wiprodigital.confluence.domain.SearchContentResults;
+import com.wiprodigital.confluence.domain.Version;
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import retrofit2.Call;

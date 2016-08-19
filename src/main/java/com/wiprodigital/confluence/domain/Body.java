@@ -1,4 +1,4 @@
-package buildit.confluence.domain;
+package com.wiprodigital.confluence.domain;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 

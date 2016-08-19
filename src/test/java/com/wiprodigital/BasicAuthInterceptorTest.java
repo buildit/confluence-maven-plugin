@@ -1,4 +1,4 @@
-package buildit;
+package com.wiprodigital;
 
 import okhttp3.*;
 import org.junit.Test;

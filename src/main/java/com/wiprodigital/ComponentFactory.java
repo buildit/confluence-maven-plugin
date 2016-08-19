@@ -1,6 +1,6 @@
-package buildit;
+package com.wiprodigital;
 
-import buildit.confluence.ConfluenceApi;
+import com.wiprodigital.confluence.ConfluenceApi;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.Interceptor;

@@ -1,7 +1,7 @@
-package buildit.confluence;
+package com.wiprodigital.confluence;
 
-import buildit.confluence.domain.Content;
-import buildit.confluence.domain.SearchContentResults;
+import com.wiprodigital.confluence.domain.Content;
+import com.wiprodigital.confluence.domain.SearchContentResults;
 import retrofit2.Call;
 import retrofit2.http.*;
 
