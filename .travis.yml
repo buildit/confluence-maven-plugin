@@ -1,7 +1,8 @@
 jdk:
   - oraclejdk8
-  - oraclejdk7
-  - openjdk6
 
 script:
   - mvn clean install && mvn -Prun-its clean integration-test
+
+deploy:
+  - ./scripts/release_to_bintray.sh && ./scripts/bump_version.sh
