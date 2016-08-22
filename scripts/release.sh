@@ -4,16 +4,18 @@ import xml.etree.ElementTree as ET;
 import os;
 
 currentVersion = ET.parse(open('pom.xml')).getroot().find('{http://maven.apache.org/POM/4.0.0}version').text
-os.system('git remote set-url origin ' + os.environ['GITHUB_AUTH_REPO_URL'])
+#os.system('git remote set-url origin ' + os.environ['GITHUB_AUTH_REPO_URL'])
 
 # tag
-os.system('git -c user.name="travis" -c user.email="travis" tag -a ' + currentVersion + ' -m "Built version: ' + currentVersion + '"')
+os.system('git -c user.name="travis" -c user.email="travis" tag -a ' + currentVersion + ' -m "[skip ci] Built version: ' + currentVersion + '"')
 os.system('git push --tags')
 
 # bintray upload
-bintrayUrl = 'https://api.bintray.com/content/buildit/maven/confluence-maven-plugin/' + currentVersion + '/confluence-maven-plugin-' + currentVersion + '.jar?publish=1'
-print 'curl -u ' + os.environ['BINTRAY_USERNAME'] + ':' + os.environ['BINTRAY_PASSWORD'] + ' -T target/*.jar "' + bintrayUrl + '"'
-os.system('curl -u ' + os.environ['BINTRAY_USERNAME'] + ':' + os.environ['BINTRAY_PASSWORD'] + ' -T target/*.jar "' + bintrayUrl + '"')
+bintrayVersionUrl = 'https://api.bintray.com/maven/buildit/maven/confluence-maven-plugin/'
+bintrayJarUrl = bintrayVersionUrl + ';publish=1/com/wiprodigital/confluence-maven-plugin/' + currentVersion + '/confluence-maven-plugin-' + currentVersion + '.jar'
+bintrayPomUrl = bintrayVersionUrl + ';publish=1/com/wiprodigital/confluence-maven-plugin/' + currentVersion + '/confluence-maven-plugin-' + currentVersion + '.pom'
+os.system('curl -u ' + os.environ['BINTRAY_USERNAME'] + ':' + os.environ['BINTRAY_PASSWORD'] + ' -T target/*.jar "' + bintrayJarUrl + '"')
+os.system('curl -u ' + os.environ['BINTRAY_USERNAME'] + ':' + os.environ['BINTRAY_PASSWORD'] + ' -T pom.xml "' + bintrayPomUrl + '"')
 
 # bump version
 decomposedVersion = currentVersion.split('.')
