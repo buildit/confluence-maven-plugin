@@ -9,8 +9,8 @@
     <version>@project.version@</version>
     <configuration>
         <apiBaseUrl>http://foo.bar.net/wiki/rest/api/</apiBaseUrl>
-        <readTimeoutMs>6000</readTimeoutMs>
         <connectionTimeoutMs>3000</connectionTimeoutMs>
+        <readTimeoutMs>6000</readTimeoutMs>
         <credentialsServerId>confluence.credentials</credentialsServerId>
         <spaceKey>AC</spaceKey>
         <ancestorId>1671226</ancestorId>
