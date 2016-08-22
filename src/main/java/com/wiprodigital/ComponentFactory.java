@@ -47,7 +47,6 @@ public class ComponentFactory {
     public static OkHttpClient okHttpClient(
             BasicAuthInterceptor basicAuthInterceptor, long readTimeoutMs, long connectionTimeoutMs) {
         return new OkHttpClient.Builder()
-                .followRedirects(true)
                 .addNetworkInterceptor(basicAuthInterceptor)
                 .readTimeout(readTimeoutMs, TimeUnit.MILLISECONDS)
                 .connectTimeout(connectionTimeoutMs, TimeUnit.MILLISECONDS)

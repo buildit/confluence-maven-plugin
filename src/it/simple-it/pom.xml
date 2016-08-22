@@ -18,9 +18,9 @@
                 <artifactId>@project.artifactId@</artifactId>
                 <version>@project.version@</version>
                 <configuration>
-                    <apiBaseUrl>http://foo.bar.net/wiki/rest/api/</apiBaseUrl>
-                    <readTimeoutMs>1000</readTimeoutMs>
-                    <connectionTimeoutMs>1000</connectionTimeoutMs>
+                    <apiBaseUrl>https://foo.bar.net/wiki/rest/api/</apiBaseUrl>
+                    <readTimeoutMs>5000</readTimeoutMs>
+                    <connectionTimeoutMs>3000</connectionTimeoutMs>
                     <credentialsServerId>confluence.credentials</credentialsServerId>
                     <spaceKey>AC</spaceKey>
                     <ancestorId>1671226</ancestorId>

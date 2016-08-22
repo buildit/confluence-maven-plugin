@@ -1,5 +1,5 @@
 
-h2. WAAAAAAAA Definitions {anchor:definitions}
+h2. Definitions {anchor:definitions}
 
 h3. Product {anchor:product}
 

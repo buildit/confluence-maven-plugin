@@ -23,8 +23,8 @@ under the License.
     <servers>
         <server>
             <id>confluence.credentials</id>
-            <username>api-account</username>
-            <password>admin</password>
+            <username>username</username>
+            <password>password</password>
         </server>
     </servers>
 </settings>

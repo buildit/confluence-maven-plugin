@@ -9,13 +9,12 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
+import org.codehaus.plexus.util.FileUtils;
 import retrofit2.Response;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -143,24 +142,24 @@ public class ConfluenceMojo extends AbstractMojo {
         final String contentFile = documentEntry.getValue();
 
         getLog().info(String.format("Checking if '%s' document exists in space '%s'...", title, spaceKey));
-        final Path filePath = new File(contentFile).toPath();
 
-        final byte[] fileBytes;
+        final String fileContent;
         try {
-            fileBytes = Files.readAllBytes(filePath);
+            fileContent = FileUtils.fileRead(new File(contentFile));
         } catch (IOException e) {
-            getLog().error(String.format("Problem reading file '%s'.", filePath), e);
+            getLog().error(String.format("Problem reading file '%s'.", contentFile), e);
             return;
         }
 
         final Storage storage = new Storage.Builder()
                 .withRepresentation(representation)
-                .withValue(new String(fileBytes))
+                .withValue(fileContent)
                 .build();
 
         final Response<SearchContentResults> searchResponse;
         try {
             searchResponse = confluenceApi.search(spaceKey, title, "version").execute();
+            getLog().debug(searchResponse.raw().toString());
         } catch (IOException e) {
             getLog().error(String.format("Error searching for document '%s' in space '%s'.", title, spaceKey), e);
             return;
@@ -191,6 +190,7 @@ public class ConfluenceMojo extends AbstractMojo {
             final Response<Content> updateResponse;
             try {
                 updateResponse = confluenceApi.update(firstResult.getId(), content).execute();
+                getLog().debug(updateResponse.raw().toString());
             } catch (IOException e) {
                 getLog().error(String.format("Error updating document '%s' in space '%s'.", title, spaceKey), e);
                 return;
@@ -216,6 +216,7 @@ public class ConfluenceMojo extends AbstractMojo {
             final Response<Content> createResponse;
             try {
                 createResponse = confluenceApi.create(content).execute();
+                getLog().debug(createResponse.raw().toString());
                 if (createResponse.isSuccessful()) {
                     getLog().info(String.format("'%s' created in space '%s'!", title, spaceKey));
                 } else {
