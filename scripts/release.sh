@@ -18,3 +18,6 @@ nextVersion = majorVersion + '.' + minorVersion + '.' + str(int(patchVersion) + 
 
 os.system('mvn -DnewVersion=' + nextVersion + ' versions:set versions:commit')
 os.system('git add pom.xml')
+os.system('git commit -m "[skip ci] Bumping version to ' + nextVersion + '"')
+os.system('git push')
+
