@@ -2,7 +2,6 @@ jdk:
   - oraclejdk8
   - oraclejdk7
   - openjdk6
-  - openjdk5
 
 script:
   - ./mvnw clean install && ./mvnw -Prun-its clean integration-test
