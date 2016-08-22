@@ -6,5 +6,5 @@ script:
 
 deploy:
   provider: script
-  script: ./scripts/release_to_bintray.sh && ./scripts/bump_version.sh
+  script: ./scripts/reelase.sh
 
