@@ -4,8 +4,7 @@ import xml.etree.ElementTree as ET;
 import os;
 
 currentVersion = ET.parse(open('pom.xml')).getroot().find('{http://maven.apache.org/POM/4.0.0}version').text
-authGitUrl = 'https://' + os.environ['GITHUB_USERNAME'] + ':' + os.environ['GITHUB_TOKEN'] + '@github.com/buildit/confluence-maven-plugin'
-os.system('git remote set-url origin ' + authGitUrl)
+os.system('git remote set-url origin ' + os.environ['GITHUB_AUTH_REPO_URL'])
 
 # tag
 os.system('git -c user.name="travis" -c user.email="travis" tag -a ' + currentVersion + ' -m "Built version: ' + currentVersion + '"')
