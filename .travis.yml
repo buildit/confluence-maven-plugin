@@ -6,5 +6,5 @@ script:
 
 deploy:
   provider: script
-  script: ./scripts/reelase.sh
+  script: ./scripts/release.sh
 
