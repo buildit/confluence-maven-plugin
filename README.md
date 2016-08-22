@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/buildit/confluence-maven-plugin.svg?branch=master)](https://travis-ci.org/buildit/confluence-maven-plugin)
 [ ![Download](https://api.bintray.com/packages/buildit/maven/confluence-maven-plugin/images/download.svg) ](https://bintray.com/buildit/maven/confluence-maven-plugin/_latestVersion)
+[![Coverage Status](https://coveralls.io/repos/github/buildit/confluence-maven-plugin/badge.svg)](https://coveralls.io/github/buildit/confluence-maven-plugin)
 # Confluence Maven Plugin
 
 ```xml
