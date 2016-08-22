@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/buildit/confluence-maven-plugin.svg?branch=master)](https://travis-ci.org/buildit/confluence-maven-plugin)
+
 # Confluence Maven Plugin
 
 ```xml
@@ -7,8 +9,8 @@
     <version>@project.version@</version>
     <configuration>
         <apiBaseUrl>http://foo.bar.net/wiki/rest/api/</apiBaseUrl>
-        <readTimeoutMs>3000</readTimeoutMs>
-        <connectionTimeoutMs>5000</connectionTimeoutMs>
+        <readTimeoutMs>6000</readTimeoutMs>
+        <connectionTimeoutMs>3000</connectionTimeoutMs>
         <credentialsServerId>confluence.credentials</credentialsServerId>
         <spaceKey>AC</spaceKey>
         <ancestorId>1671226</ancestorId>
