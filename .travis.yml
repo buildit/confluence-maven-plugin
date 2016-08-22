@@ -4,4 +4,4 @@ jdk:
   - openjdk6
 
 script:
-  - mvn clean install && mvnw -Prun-its clean integration-test
+  - mvn clean install && mvn -Prun-its clean integration-test
