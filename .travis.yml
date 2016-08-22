@@ -5,4 +5,6 @@ script:
   - mvn clean install && mvn -Prun-its clean integration-test
 
 deploy:
-  - ./scripts/release_to_bintray.sh && ./scripts/bump_version.sh
+  provider: script
+  script: ./scripts/release_to_bintray.sh && ./scripts/bump_version.sh
+
