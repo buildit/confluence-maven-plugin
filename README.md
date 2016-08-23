@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/buildit/confluence-maven-plugin.svg?branch=master)](https://travis-ci.org/buildit/confluence-maven-plugin)
 [ ![Download](https://api.bintray.com/packages/buildit/maven/confluence-maven-plugin/images/download.svg) ](https://bintray.com/buildit/maven/confluence-maven-plugin/_latestVersion)
 # Confluence Maven Plugin
-This is a simple plugin to create documents in confluence. The name and content of the documents are defined explicitly.
+This is a simple plugin to create/update documents in confluence. The name and content of the documents are defined explicitly in the configuration. This plugin is using Confluence REST API.
 
 | Parameter           | Description                                                                                                        |
 |---------------------|--------------------------------------------------------------------------------------------------------------------|
@@ -18,12 +18,25 @@ This is a simple plugin to create documents in confluence. The name and content 
 | connectionTimeoutMs | The connection timeout of the confluence HTTP client in milliseconds (defaults to 3000).                           |
 | readTimeoutMs       | The read timeout of the confluence HTTP client in milliseconds (defaults to 6000).                                 |
 
+This plugin is hosted in bintray, please update your plugin repository section accordingly:
+```xml
+<pluginRepository>
+    <snapshots>
+        <enabled>false</enabled>
+    </snapshots>
+    <id>bintray-buildit-maven</id>
+    <name>bintray-plugins</name>
+    <url>http://dl.bintray.com/buildit/maven</url>
+</pluginRepository>
+```
+For the latest version click on the bintray download icon on top of this page. 
+
 #### Usage Example
 ```xml
 <plugin>
     <groupId>com.wiprodigital</groupId>
     <artifactId>confluence-maven-plugin</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.5</version>
     <configuration>
         <apiBaseUrl>http://foo.bar.net/wiki/rest/api/</apiBaseUrl>
         <connectionTimeoutMs>3000</connectionTimeoutMs>
