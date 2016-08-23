@@ -4,9 +4,6 @@ jdk:
 script:
   - mvn clean install && mvn -Prun-its clean integration-test
   
-after_success:
-- coveralls
-
 deploy:
   skip_cleanup: true
   provider: script

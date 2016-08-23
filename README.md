@@ -1,8 +1,21 @@
 [![Build Status](https://travis-ci.org/buildit/confluence-maven-plugin.svg?branch=master)](https://travis-ci.org/buildit/confluence-maven-plugin)
 [ ![Download](https://api.bintray.com/packages/buildit/maven/confluence-maven-plugin/images/download.svg) ](https://bintray.com/buildit/maven/confluence-maven-plugin/_latestVersion)
-[![Coverage Status](https://coveralls.io/repos/github/buildit/confluence-maven-plugin/badge.svg)](https://coveralls.io/github/buildit/confluence-maven-plugin)
 # Confluence Maven Plugin
+This is a simple plugin to create documents in confluence. The name and content of the documents are defined explicitly.
 
+| Parameter           | Description                                                                                                        |
+|---------------------|--------------------------------------------------------------------------------------------------------------------|
+| apiBaseUrl          | The base api URL. For atlassian cloud is usually something like: `https://yourdomain.atlassian.net/wiki/rest/api/` |
+| credentialsServerId | The server ID in your build server maven `settings.xml` that contains the confluence credentials.                  |
+| spaceKey            | The space to where documents should be created.                                                                    |
+| ancestorId          | The ID of the parent document.                                                                                     |
+| type                | The type of document to create (page or blog).                                                                     |
+| representation      | The format of the document (wiki or storage).                                                                      |
+| documents           | Pairs of name and local filenames to be created on confluence.                                                     |
+| connectionTimeoutMs | The connection timeout of the confluence HTTP client in milliseconds (defaults to 3000).                           |
+| readTimeoutMs       | The read timeout of the confluence HTTP client in milliseconds (defaults to 6000).                                 |
+
+#### Usage Example
 ```xml
 <plugin>
     <groupId>@project.groupId@</groupId>
