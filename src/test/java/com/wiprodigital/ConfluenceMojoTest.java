@@ -53,7 +53,9 @@ public class ConfluenceMojoTest {
         confluenceMojo.setCredentialsServerId("a-server-id");
         confluenceMojo.setSettings(emptySettings());
 
+        expectedException.expect(MojoExecutionException.class);
         expectedException.expectMessage(equalTo("Couldn't find server with ID 'a-server-id' in maven settings.xml"));
+
         confluenceMojo.execute();
     }
 
@@ -61,6 +63,9 @@ public class ConfluenceMojoTest {
     public void shouldLogError_whenNotAbleToReadFile()
             throws MojoFailureException, MojoExecutionException, MalformedURLException {
         final ConfluenceMojo confluenceMojo = correctlySetupConfluenceMojo(confluenceApi, logger, "non-existing.wiki");
+        expectedException.expect(MojoExecutionException.class);
+        expectedException.expectMessage(equalTo("Document content file not found, aborting"));
+
         confluenceMojo.execute();
 
         verify(logger).error(startsWith("Problem reading file 'non-existing.wiki'."), any(Exception.class));
@@ -71,6 +76,9 @@ public class ConfluenceMojoTest {
             throws MojoFailureException, MojoExecutionException, MalformedURLException {
         final URL resource = getClass().getClassLoader().getResource("existing.wiki");
         assertNotNull(resource);
+
+        expectedException.expect(MojoExecutionException.class);
+        expectedException.expectMessage(equalTo("Confluence API call failed, aborting"));
 
         when(confluenceApi.search(anyString(), anyString(), anyString()))
                 .thenReturn(new CallWithNetworkError<SearchContentResults>());
@@ -86,6 +94,9 @@ public class ConfluenceMojoTest {
             throws MojoFailureException, MojoExecutionException, MalformedURLException {
         final URL resource = getClass().getClassLoader().getResource("existing.wiki");
         assertNotNull(resource);
+
+        expectedException.expect(MojoExecutionException.class);
+        expectedException.expectMessage(equalTo("Confluence API call failed, aborting"));
 
         when(confluenceApi.search(anyString(), anyString(), anyString()))
                 .thenReturn(new ErrorResponse<SearchContentResults>(500, "{\"message\": an error}"));
@@ -188,6 +199,23 @@ public class ConfluenceMojoTest {
         verify(logger).info("Checking if 'Parent Document Title' document exists in space 'foo'...");
         verify(logger).info("'Parent Document Title' already exists with id '1' in space 'foo', updating...");
         verify(logger).info("'Parent Document Title' updated in space 'foo' with ancestor '12345'!");
+    }
+
+    @Test
+    public void shouldFailExecution_whenNotAbleToCreateOrCreateParent()
+            throws MojoFailureException, MojoExecutionException, MalformedURLException {
+        final URL resource = getClass().getClassLoader().getResource("existing.wiki");
+        assertNotNull(resource);
+
+        when(confluenceApi.search(anyString(), anyString(), anyString()))
+                .thenReturn(new CallWithNetworkError<SearchContentResults>());
+        expectedException.expect(MojoExecutionException.class);
+        expectedException.expectMessage(equalTo("Confluence API call failed, aborting"));
+
+        final ConfluenceMojo confluenceMojo = correctlySetupConfluenceMojoWithParent(
+                confluenceApi, logger, "Parent Document Title", resource.getFile(), resource.getFile());
+
+        confluenceMojo.execute();
     }
 
     private static SearchContentResults emptySearchContentResults() {

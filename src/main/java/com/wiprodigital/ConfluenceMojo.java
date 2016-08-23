@@ -23,6 +23,9 @@ import java.util.Properties;
 @Mojo(name = "publish-content")
 public class ConfluenceMojo extends AbstractMojo {
 
+    private static final String CONFLUENCE_API_CALL_MOJO_FAILURE_MSG = "Confluence API call failed, aborting";
+    private static final String FILE_NOT_FOUND_MOJO_FAILURE_MSG = "Document content file not found, aborting";
+
     @Parameter(
             property = "apiBaseUrl",
             required = true)
@@ -182,7 +185,7 @@ public class ConfluenceMojo extends AbstractMojo {
         }
     }
 
-    private String processDocument(ConfluenceApi confluenceApi, String ancestorId, String title, String contentFile) {
+    private String processDocument(ConfluenceApi confluenceApi, String ancestorId, String title, String contentFile) throws MojoExecutionException {
         getLog().info(String.format("Checking if '%s' document exists in space '%s'...", title, spaceKey));
 
         final String fileContent;
@@ -190,7 +193,7 @@ public class ConfluenceMojo extends AbstractMojo {
             fileContent = FileUtils.fileRead(new File(contentFile));
         } catch (IOException e) {
             getLog().error(String.format("Problem reading file '%s'.", contentFile), e);
-            return null;
+            throw new MojoExecutionException(FILE_NOT_FOUND_MOJO_FAILURE_MSG);
         }
 
         final Storage storage = new Storage.Builder()
@@ -204,13 +207,13 @@ public class ConfluenceMojo extends AbstractMojo {
             getLog().debug(searchResponse.raw().toString());
         } catch (IOException e) {
             getLog().error(String.format("Error searching for document '%s' in space '%s'.", title, spaceKey), e);
-            return null;
+            throw new MojoExecutionException(CONFLUENCE_API_CALL_MOJO_FAILURE_MSG);
         }
 
         if (!searchResponse.isSuccessful()) {
             final String error = errorFromResponse(searchResponse);
             getLog().error(String.format("Error updating '%s' status=%s error=%s", title, searchResponse.code(), error));
-            return null;
+            throw new MojoExecutionException(CONFLUENCE_API_CALL_MOJO_FAILURE_MSG);
         }
 
         if (resultsFoundInSearch(searchResponse)) {
@@ -235,7 +238,7 @@ public class ConfluenceMojo extends AbstractMojo {
                 getLog().debug(updateResponse.raw().toString());
             } catch (IOException e) {
                 getLog().error(String.format("Error updating document '%s' in space '%s'.", title, spaceKey), e);
-                return null;
+                throw new MojoExecutionException(CONFLUENCE_API_CALL_MOJO_FAILURE_MSG);
             }
 
             if (updateResponse.isSuccessful()) {
@@ -243,6 +246,7 @@ public class ConfluenceMojo extends AbstractMojo {
             } else {
                 final String error = errorFromResponse(updateResponse);
                 getLog().error(String.format("Error updating '%s' status=%s error=%s", title, updateResponse.code(), error));
+                throw new MojoExecutionException(CONFLUENCE_API_CALL_MOJO_FAILURE_MSG);
             }
 
             return updateResponse.body().getId();
@@ -260,18 +264,20 @@ public class ConfluenceMojo extends AbstractMojo {
             final Response<Content> createResponse;
             try {
                 createResponse = confluenceApi.create(content).execute();
-                getLog().debug(createResponse.raw().toString());
-                if (createResponse.isSuccessful()) {
-                    getLog().info(String.format("'%s' created in space '%s' with ancestor '%s'!", title, spaceKey, ancestorId));
-                } else {
-                    final String error = errorFromResponse(createResponse);
-                    getLog().error(String.format("Error creating '%s': %s", title, error));
-                }
-                return createResponse.body().getId();
             } catch (IOException e) {
                 getLog().error(String.format("Error creating document '%s' in space '%s'.", title, spaceKey), e);
-                return null;
+                throw new MojoExecutionException(CONFLUENCE_API_CALL_MOJO_FAILURE_MSG);
             }
+
+            getLog().debug(createResponse.raw().toString());
+            if (createResponse.isSuccessful()) {
+                getLog().info(String.format("'%s' created in space '%s' with ancestor '%s'!", title, spaceKey, ancestorId));
+            } else {
+                final String error = errorFromResponse(createResponse);
+                getLog().error(String.format("Error creating '%s': %s", title, error));
+                throw new MojoExecutionException(CONFLUENCE_API_CALL_MOJO_FAILURE_MSG);
+            }
+            return createResponse.body().getId();
         }
     }
 
