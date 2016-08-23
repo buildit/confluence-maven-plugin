@@ -54,6 +54,21 @@ public class ConfluenceMojo extends AbstractMojo {
     private String ancestorId;
 
     @Parameter(
+            property = "createParent",
+            required = false)
+    private boolean createParent = false;
+
+    @Parameter(
+            property = "parentTitle",
+            required = false)
+    private String parentTitle;
+
+    @Parameter(
+            property = "parentContentFile",
+            required = false)
+    private String parentContentFile;
+
+    @Parameter(
             property = "type",
             required = true)
     private String type; // page, blogpost
@@ -120,27 +135,54 @@ public class ConfluenceMojo extends AbstractMojo {
         this.confluenceApi = confluenceApi;
     }
 
+    void setCreateParent(boolean createParent) {
+        this.createParent = createParent;
+    }
+
+    void setParentTitle(String parentTitle) {
+        this.parentTitle = parentTitle;
+    }
+
+    void setParentContentFile(String parentContentFile) {
+        this.parentContentFile = parentContentFile;
+    }
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         final Server server = settings.getServer(credentialsServerId);
-        if (server == null) {
-            throw new MojoExecutionException(String.format(
-                    "Couldn't find server with ID '%s' in maven settings.xml", credentialsServerId));
-        }
+        validateServerCredentials(server, credentialsServerId);
 
         if (confluenceApi == null) {
             confluenceApi = ComponentFactory.confluenceApi(
                     server.getUsername(), server.getPassword(), apiBaseUrl, readTimeoutMs, connectionTimeoutMs);
         }
 
+        String parentId = null;
+        if (createParent) {
+            validateCreateParentMode(parentTitle, parentContentFile);
+            parentId = processDocument(confluenceApi, this.ancestorId, parentTitle, parentContentFile);
+        }
+
+        final String ancestorId = (parentId == null) ? this.ancestorId : parentId;
         for (Map.Entry<String, String> documentEntry : propertiesToStringMap(documents).entrySet()) {
-            processDocument(confluenceApi, documentEntry);
+            processDocument(confluenceApi, ancestorId, documentEntry.getKey(), documentEntry.getValue());
         }
     }
 
-    private void processDocument(ConfluenceApi confluenceApi, Map.Entry<String, String> documentEntry) {
-        final String title = documentEntry.getKey();
-        final String contentFile = documentEntry.getValue();
+    private static void validateServerCredentials(Server server, String credentialsServerId) throws MojoExecutionException {
+        if (server == null) {
+            throw new MojoExecutionException(String.format(
+                    "Couldn't find server with ID '%s' in maven settings.xml", credentialsServerId));
+        }
+    }
 
+    private static void validateCreateParentMode(String parentTitle, String parentContentFile) throws MojoExecutionException {
+        if (parentTitle == null || parentTitle.isEmpty()
+                || parentContentFile == null || parentContentFile.isEmpty()) {
+            throw new MojoExecutionException("'parentTitle' and 'parentContentFile' are mandatory when 'createParent' is enabled.");
+        }
+    }
+
+    private String processDocument(ConfluenceApi confluenceApi, String ancestorId, String title, String contentFile) {
         getLog().info(String.format("Checking if '%s' document exists in space '%s'...", title, spaceKey));
 
         final String fileContent;
@@ -148,7 +190,7 @@ public class ConfluenceMojo extends AbstractMojo {
             fileContent = FileUtils.fileRead(new File(contentFile));
         } catch (IOException e) {
             getLog().error(String.format("Problem reading file '%s'.", contentFile), e);
-            return;
+            return null;
         }
 
         final Storage storage = new Storage.Builder()
@@ -162,13 +204,13 @@ public class ConfluenceMojo extends AbstractMojo {
             getLog().debug(searchResponse.raw().toString());
         } catch (IOException e) {
             getLog().error(String.format("Error searching for document '%s' in space '%s'.", title, spaceKey), e);
-            return;
+            return null;
         }
 
         if (!searchResponse.isSuccessful()) {
             final String error = errorFromResponse(searchResponse);
             getLog().error(String.format("Error updating '%s' status=%s error=%s", title, searchResponse.code(), error));
-            return;
+            return null;
         }
 
         if (resultsFoundInSearch(searchResponse)) {
@@ -193,15 +235,17 @@ public class ConfluenceMojo extends AbstractMojo {
                 getLog().debug(updateResponse.raw().toString());
             } catch (IOException e) {
                 getLog().error(String.format("Error updating document '%s' in space '%s'.", title, spaceKey), e);
-                return;
+                return null;
             }
 
             if (updateResponse.isSuccessful()) {
-                getLog().info(String.format("'%s' updated in space '%s'!", title, spaceKey));
+                getLog().info(String.format("'%s' updated in space '%s' with ancestor '%s'!", title, spaceKey, ancestorId));
             } else {
                 final String error = errorFromResponse(updateResponse);
                 getLog().error(String.format("Error updating '%s' status=%s error=%s", title, updateResponse.code(), error));
             }
+
+            return updateResponse.body().getId();
         } else {
             getLog().info(String.format("Creating '%s' in space '%s'...", title, spaceKey));
 
@@ -218,13 +262,15 @@ public class ConfluenceMojo extends AbstractMojo {
                 createResponse = confluenceApi.create(content).execute();
                 getLog().debug(createResponse.raw().toString());
                 if (createResponse.isSuccessful()) {
-                    getLog().info(String.format("'%s' created in space '%s'!", title, spaceKey));
+                    getLog().info(String.format("'%s' created in space '%s' with ancestor '%s'!", title, spaceKey, ancestorId));
                 } else {
                     final String error = errorFromResponse(createResponse);
                     getLog().error(String.format("Error creating '%s': %s", title, error));
                 }
+                return createResponse.body().getId();
             } catch (IOException e) {
                 getLog().error(String.format("Error creating document '%s' in space '%s'.", title, spaceKey), e);
+                return null;
             }
         }
     }

@@ -18,7 +18,7 @@
                 <artifactId>@project.artifactId@</artifactId>
                 <version>@project.version@</version>
                 <configuration>
-                    <apiBaseUrl>https://foo.bar.net/wiki/rest/api/</apiBaseUrl>
+                    <apiBaseUrl>http://foo.bar.net/wiki/rest/api/</apiBaseUrl>
                     <readTimeoutMs>5000</readTimeoutMs>
                     <connectionTimeoutMs>3000</connectionTimeoutMs>
                     <credentialsServerId>confluence.credentials</credentialsServerId>
@@ -26,6 +26,9 @@
                     <ancestorId>1671226</ancestorId>
                     <type>page</type>
                     <representation>wiki</representation>
+                    <createParent>true</createParent>
+                    <parentTitle>Parent Document</parentTitle>
+                    <parentContentFile>${basedir}/docs-v1/parent.wiki</parentContentFile>
                     <documents>
                         <property>
                             <name>Foo Document</name>

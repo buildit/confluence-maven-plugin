@@ -5,9 +5,8 @@ import com.wiprodigital.confluence.domain.Content;
 import com.wiprodigital.confluence.domain.SearchContentResults;
 import com.wiprodigital.confluence.domain.Version;
 import okhttp3.MediaType;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
 import okhttp3.Request;
+import okhttp3.ResponseBody;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
@@ -19,6 +18,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import retrofit2.Call;
 import retrofit2.Response;
 
 import java.io.IOException;
@@ -112,14 +112,14 @@ public class ConfluenceMojoTest {
                 .thenReturn(new SuccessfulResponse<SearchContentResults>(searchContentResultsWithOneDocument(content)));
 
         when(confluenceApi.update(anyString(), any(Content.class)))
-                .thenReturn(new SuccessfulResponse<Content>(null));
+                .thenReturn(new SuccessfulResponse<Content>(new Content.Builder().withId("1").build()));
 
         final ConfluenceMojo confluenceMojo = correctlySetupConfluenceMojo(confluenceApi, logger, resource.getFile());
         confluenceMojo.execute();
 
         verify(logger).info("Checking if 'API Documentation' document exists in space 'foo'...");
         verify(logger).info("'API Documentation' already exists with id '1' in space 'foo', updating...");
-        verify(logger).info("'API Documentation' updated in space 'foo'!");
+        verify(logger).info("'API Documentation' updated in space 'foo' with ancestor '12345'!");
     }
 
     @Test
@@ -132,14 +132,62 @@ public class ConfluenceMojoTest {
                 .thenReturn(new SuccessfulResponse<SearchContentResults>(emptySearchContentResults()));
 
         when(confluenceApi.create(any(Content.class)))
-                .thenReturn(new SuccessfulResponse<Content>(null));
+                .thenReturn(new SuccessfulResponse<Content>(new Content.Builder().withId("1").build()));
 
         final ConfluenceMojo confluenceMojo = correctlySetupConfluenceMojo(confluenceApi, logger, resource.getFile());
         confluenceMojo.execute();
 
         verify(logger).info("Checking if 'API Documentation' document exists in space 'foo'...");
         verify(logger).info("Creating 'API Documentation' in space 'foo'...");
-        verify(logger).info("'API Documentation' created in space 'foo'!");
+        verify(logger).info("'API Documentation' created in space 'foo' with ancestor '12345'!");
+    }
+
+    @Test
+    public void shouldCreateParentDocument_ifSpecifiedAndNonExisting()
+            throws MojoFailureException, MojoExecutionException, MalformedURLException {
+        final URL resource = getClass().getClassLoader().getResource("existing.wiki");
+        assertNotNull(resource);
+
+        when(confluenceApi.search(anyString(), anyString(), anyString()))
+                .thenReturn(new SuccessfulResponse<SearchContentResults>(emptySearchContentResults()));
+
+        when(confluenceApi.create(any(Content.class)))
+                .thenReturn(new SuccessfulResponse<Content>(new Content.Builder().withId("1").build()));
+
+        final ConfluenceMojo confluenceMojo = correctlySetupConfluenceMojoWithParent(
+                confluenceApi, logger, "Parent Document Title", resource.getFile(), resource.getFile());
+        confluenceMojo.execute();
+
+        verify(logger).info("Checking if 'Parent Document Title' document exists in space 'foo'...");
+        verify(logger).info("Creating 'Parent Document Title' in space 'foo'...");
+        verify(logger).info("'Parent Document Title' created in space 'foo' with ancestor '12345'!");
+    }
+
+    @Test
+    public void shouldUpdateParentDocument_ifSpecifiedAndNonExisting()
+            throws MojoFailureException, MojoExecutionException, MalformedURLException {
+        final URL resource = getClass().getClassLoader().getResource("existing.wiki");
+        assertNotNull(resource);
+
+        final Content parentDocument = new Content.Builder()
+                .withId("1")
+                .withTitle("Parent Document Title")
+                .withVersion(new Version.Builder().withNumber(1).build())
+                .build();
+
+        when(confluenceApi.search(anyString(), anyString(), anyString()))
+                .thenReturn(new SuccessfulResponse<SearchContentResults>(searchContentResultsWithOneDocument(parentDocument)));
+
+        when(confluenceApi.update(eq(parentDocument.getId()), any(Content.class)))
+                .thenReturn(new SuccessfulResponse<Content>(new Content.Builder().withId(parentDocument.getId()).build()));
+
+        final ConfluenceMojo confluenceMojo = correctlySetupConfluenceMojoWithParent(
+                confluenceApi, logger, "Parent Document Title", resource.getFile(), resource.getFile());
+        confluenceMojo.execute();
+
+        verify(logger).info("Checking if 'Parent Document Title' document exists in space 'foo'...");
+        verify(logger).info("'Parent Document Title' already exists with id '1' in space 'foo', updating...");
+        verify(logger).info("'Parent Document Title' updated in space 'foo' with ancestor '12345'!");
     }
 
     private static SearchContentResults emptySearchContentResults() {
@@ -164,6 +212,27 @@ public class ConfluenceMojoTest {
         confluenceMojo.setDocuments(oneDocument("API Documentation", documentFile));
         confluenceMojo.setLog(logger);
         confluenceMojo.setConfluenceApi(confluenceApi);
+        confluenceMojo.setAncestorId("12345");
+        return confluenceMojo;
+    }
+
+    private static ConfluenceMojo correctlySetupConfluenceMojoWithParent(
+            ConfluenceApi confluenceApi, Log logger, String parentDocumentTitle,
+            String parentDocumentContent, String documentFile) throws MalformedURLException {
+        final ConfluenceMojo confluenceMojo = new ConfluenceMojo();
+        confluenceMojo.setCredentialsServerId("a-server-id");
+        confluenceMojo.setSettings(settingsWithServer(server("a-server-id", "user", "pass")));
+        confluenceMojo.setApiBaseUrl(new URL("https://foo.atlassian.net/wiki/rest/api/content/"));
+        confluenceMojo.setReadTimeoutMs(3000);
+        confluenceMojo.setConnectionTimeoutMs(3000);
+        confluenceMojo.setSpaceKey("foo");
+        confluenceMojo.setDocuments(oneDocument("API Documentation", documentFile));
+        confluenceMojo.setLog(logger);
+        confluenceMojo.setConfluenceApi(confluenceApi);
+        confluenceMojo.setAncestorId("12345");
+        confluenceMojo.setCreateParent(true);
+        confluenceMojo.setParentTitle(parentDocumentTitle);
+        confluenceMojo.setParentContentFile(parentDocumentContent);
         return confluenceMojo;
     }
 
