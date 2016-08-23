@@ -18,9 +18,9 @@ This is a simple plugin to create documents in confluence. The name and content 
 #### Usage Example
 ```xml
 <plugin>
-    <groupId>@project.groupId@</groupId>
-    <artifactId>@project.artifactId@</artifactId>
-    <version>@project.version@</version>
+    <groupId>com.wiprodigital</groupId>
+    <artifactId>confluence-maven-plugin</artifactId>
+    <version>1.0.3</version>
     <configuration>
         <apiBaseUrl>http://foo.bar.net/wiki/rest/api/</apiBaseUrl>
         <connectionTimeoutMs>3000</connectionTimeoutMs>
