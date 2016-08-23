@@ -11,6 +11,9 @@ This is a simple plugin to create documents in confluence. The name and content 
 | ancestorId          | The ID of the parent document.                                                                                     |
 | type                | The type of document to create (page or blog).                                                                     |
 | representation      | The format of the document (wiki or storage).                                                                      |
+| createParent        | Whether to create a parent page or not (defaults to false).                                                        |
+| parentTitle         | The parent document title (only used if createParent is true).                                                     |
+| parentContentFile   | The parent document content file (only used if createParent is true).                                              |
 | documents           | Pairs of name and local filenames to be created on confluence.                                                     |
 | connectionTimeoutMs | The connection timeout of the confluence HTTP client in milliseconds (defaults to 3000).                           |
 | readTimeoutMs       | The read timeout of the confluence HTTP client in milliseconds (defaults to 6000).                                 |
@@ -30,6 +33,9 @@ This is a simple plugin to create documents in confluence. The name and content 
         <ancestorId>1671226</ancestorId>
         <type>page</type>
         <representation>wiki</representation>
+        <createParent>true</createParent>
+        <parentTitle>Parent Document</parentTitle>
+        <parentContentFile>${basedir}/docs-v1/parent.wiki</parentContentFile>
         <documents>
             <property>
                 <name>Foo Document</name>
