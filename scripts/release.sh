@@ -7,7 +7,7 @@ currentVersion = ET.parse(open('pom.xml')).getroot().find('{http://maven.apache.
 
 # tag
 os.system('git -c user.name="travis" -c user.email="travis" tag -a ' + currentVersion + ' -m "[skip ci] Built version: ' + currentVersion + '"')
-os.system('git push --tags --repo ' + os.environ['GITHUB_AUTH_REPO_URL'] + ' &> /dev/null')
+os.system('git push --tags --repo "' + os.environ['GITHUB_AUTH_REPO_URL'] + '" &> /dev/null')
 
 # bintray upload
 bintrayVersionUrl = 'https://api.bintray.com/maven/buildit/maven/confluence-maven-plugin/;publish=1/com/wiprodigital/confluence-maven-plugin/' + currentVersion + '/confluence-maven-plugin-' + currentVersion
