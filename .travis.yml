@@ -2,7 +2,7 @@ jdk:
   - oraclejdk8
 
 script:
-  - mvn clean install && mvn -Prun-its clean integration-test
+  - mvn clean install
   
 deploy:
   skip_cleanup: true
