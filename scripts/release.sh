@@ -27,8 +27,8 @@ patchVersion = decomposedVersion[2].split('-')[0]
 
 nextVersion = majorVersion + '.' + minorVersion + '.' + str(int(patchVersion) + 1)
 
-os.system('git checkout ' + os.environ['TRAVIS_BRANCH'] + ' &> /dev/null')
+os.system('git checkout master &> /dev/null')
 os.system('mvn -DnewVersion=' + nextVersion + ' versions:set versions:commit')
 os.system('git add pom.xml')
 os.system('git -c user.name="travis" -c user.email="travis" commit -m "[skip ci] Bumping version to ' + nextVersion + '"')
-os.system('git push')
+os.system('git push &> /dev/null')
