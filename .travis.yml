@@ -3,4 +3,5 @@ jdk:
 
 script:
   - mvn clean install && ./scripts/release.sh
+  - git push &> /dev/null
 
