@@ -2,10 +2,5 @@ jdk:
   - oraclejdk8
 
 script:
-  - mvn clean install
-  
-deploy:
-  skip_cleanup: true
-  provider: script
-  script: ./scripts/release.sh
+  - mvn clean install && ./scripts/release.sh
 
