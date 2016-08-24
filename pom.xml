@@ -4,7 +4,7 @@
 
     <groupId>com.wiprodigital</groupId>
     <artifactId>confluence-maven-plugin</artifactId>
-    <version>1.0.17</version>
+    <version>1.0.18</version>
     <packaging>maven-plugin</packaging>
 
     <name>confluence-maven-plugin</name>
