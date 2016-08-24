@@ -5,6 +5,7 @@ import os;
 
 currentVersion = ET.parse(open('pom.xml')).getroot().find('{http://maven.apache.org/POM/4.0.0}version').text
 os.system('git remote set-url origin ' + os.environ['GITHUB_AUTH_REPO_URL'] + ' &> /dev/null')
+os.system('git config --global push.default simple')
 
 # tag
 os.system('git -c user.name="travis" -c user.email="travis" tag -a ' + currentVersion + ' -m "[skip ci] Built version: ' + currentVersion + '"')
